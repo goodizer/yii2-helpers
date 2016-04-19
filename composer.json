@@ -19,10 +19,12 @@
     "require": {
         "yiisoft/yii2": "*"
     },
-    "repository" : {
-        "type": "git",
-        "url": "https://github.com/goodizer/yii2-helpers.git"
-    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/goodizer/yii2-helpers.git"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "goodizer\\helpers\\": ""
