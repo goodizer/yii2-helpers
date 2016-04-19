@@ -22,7 +22,7 @@
     "repositories": [
         {
             "type": "git",
-            "url": "https://github.com/goodizer/yii2-helpers.git"
+            "url": "git@github.com:goodizer/yii2-helpers.git"
         }
     ],
     "autoload": {
