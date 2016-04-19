@@ -17,9 +17,6 @@
         "source": "https://github.com/goodizer/yii2-helpers"
     },
     "minimum-stability": "stable",
-    "require": {
-        "yiisoft/yii2": "*"
-    },
     "autoload": {
         "psr-4": {
             "goodizer\\helpers\\": ""
