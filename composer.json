@@ -15,17 +15,13 @@
             "email": "alex.in.development@gmail.com"
         }
     ],
+    "minimum-stability": "stable",
     "require": {
         "yiisoft/yii2": "*"
     },
     "autoload": {
         "psr-4": {
             "goodizer\\helpers\\": ""
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "dev-master"
         }
     }
 }
