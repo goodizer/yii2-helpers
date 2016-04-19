@@ -19,6 +19,21 @@ use yii\helpers\ArrayHelper;
 class ModelHelper
 {
     /**
+     * Example:
+     *
+     /* $model = new User();
+     * $model->status = User::STATUS_ACTIVE;
+     * $searchData = ModelHelper::search($model);
+     *
+     * echo \yii\grid\GridView::widget(
+     *     'filterModel' => $searchData->filterModel,
+     *     'dataProvider' => $searchData->dataProvider,
+     *     'columns' => [
+     *         ...
+     *     ]
+     * );
+     *
+     *
      * @param string | ActiveRecord $model
      * @param array $opts
      * @return GridSearchData | array
