@@ -1,6 +1,5 @@
 {
     "name": "goodizer/yii2-helpers",
-    "version": "0.0.1",
     "description": "An advanced Yii 2 helpers.",
     "keywords": ["yii2", "extension", "helper"],
     "homepage": "https://github.com/goodizer/yii2-helpers",
@@ -34,7 +33,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.0.x-dev"
+            "dev-master": "1.0-dev"
         }
     }
 }
