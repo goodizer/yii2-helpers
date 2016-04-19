@@ -16,7 +16,7 @@
         "issues": "https://github.com/goodizer/yii2-helpers/issues",
         "source": "https://github.com/goodizer/yii2-helpers"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
         "yiisoft/yii2": "*"
     },
