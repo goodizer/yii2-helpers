@@ -49,7 +49,7 @@ class ModelHelper
                 'data' => null,
                 'query' => null,
                 'scenario' => null,
-                'asArray' => true,
+                'asArray' => false,
             ],
             $opts
         );
