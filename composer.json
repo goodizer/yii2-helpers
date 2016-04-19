@@ -1,5 +1,4 @@
 {
-    "version": "1.0.0",
     "name": "goodizer/yii2-helpers",
     "description": "An advanced Yii 2 helpers.",
     "keywords": [
@@ -22,6 +21,11 @@
     "autoload": {
         "psr-4": {
             "goodizer\\helpers\\": ""
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "dev-master"
         }
     }
 }
