@@ -10,6 +10,7 @@ namespace goodizer\helpers;
 
 use yii\base\Component;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
@@ -36,7 +37,7 @@ class ModelHelper
      *
      * @param string | ActiveRecord $model
      * @param array $opts
-     * @return GridSearchData | array
+     * @return SearchData | array
      */
     static function search($model, $opts = [])
     {
@@ -62,7 +63,7 @@ class ModelHelper
             'filterModel' => $model,
             'dataProvider' => new ActiveDataProvider(array_filter([
                 'query' => static::searchQuery($model, $opts),
-                'pagination' => $opts['pagination'],
+                'pagination' => empty($opts['pagination']) ? new Pagination(['defaultPageSize' => 10]) : null,
             ]))
         ];
 
@@ -227,9 +228,9 @@ class ModelHelper
     }
 
     /**
-     * Множественное уровнезависимое сохранение моделей
+     * Multiple saving models with levels
      *
-     * Пример использования:
+     * Example:
      *    $records = ActiveRecord::multiSave(
      *        $_POST,
      *        array(
@@ -251,7 +252,7 @@ class ModelHelper
      *                'records' => $model->isNewRecord ? array(new Issue) : array(),
      *            ),
      *            function ($records) use ($ctrl) {
-     *                Yii::$app->session->setFlash('success', 'Информация сохранена.');
+     *                Yii::$app->session->setFlash('success', Yii::t('system', 'save success'));
      *                $ctrl->redirect($ctrl->createUrl('index'));
      *            }
      *        )
@@ -421,7 +422,7 @@ class ModelHelper
     }
 }
 
-class GridSearchData extends Component
+class SearchData extends Component
 {
     /**
      * @var ActiveRecord
