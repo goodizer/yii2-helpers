@@ -10,7 +10,6 @@ namespace goodizer\helpers;
 
 use yii\base\Component;
 use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
@@ -46,7 +45,7 @@ class ModelHelper
         }
 
         $opts = ArrayHelper::merge([
-                'pagination' => null,
+                'pagination' => ['defaultPageSize' => 10],
                 'data' => null,
                 'query' => null,
                 'scenario' => null,
@@ -63,7 +62,7 @@ class ModelHelper
             'filterModel' => $model,
             'dataProvider' => new ActiveDataProvider(array_filter([
                 'query' => static::searchQuery($model, $opts),
-                'pagination' => empty($opts['pagination']) ? new Pagination(['defaultPageSize' => 10]) : null,
+                'pagination' => $opts['pagination'],
             ]))
         ];
 
