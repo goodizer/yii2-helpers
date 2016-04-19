@@ -16,7 +16,6 @@
             "email": "alex.in.development@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
     "require": {
         "yiisoft/yii2": "*"
     },
