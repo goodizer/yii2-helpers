@@ -2,27 +2,24 @@
     "name": "goodizer/yii2-helpers",
     "version": "0.0.1",
     "description": "An advanced Yii 2 helpers.",
-    "keywords": [
-        "yii2",
-        "extension",
-        "helper"
-    ],
+    "keywords": ["yii2", "extension", "helper"],
     "homepage": "https://github.com/goodizer/yii2-helpers",
     "type": "yii2-extension",
     "license": "MIT",
     "authors": [
         {
             "name": "Alexey Veretelnik",
-            "email": "alex.in.development@gmail.com"
+            "email": "alex.in.development@gmail.com",
+            "homepage": "https://github.com/goodizer/yii2-helpers"
         }
     ],
     "support": {
         "issues": "https://github.com/goodizer/yii2-helpers/issues",
         "source": "https://github.com/goodizer/yii2-helpers"
     },
-    "minimum-stability": "dev-master",
+    "minimum-stability": "stable",
     "require": {
-        "yiisoft/yii2": "~2.0@stable"
+        "yiisoft/yii2": "*"
     },
     "repositories": [
         {
