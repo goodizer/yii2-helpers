@@ -1,0 +1,22 @@
+{
+    "name": "goodizer/yii2-helpers",
+    "version": "1.0.0",
+    "homepage": "https://github.com/goodizer/yii2-helpers",
+    "authors": [
+        "Alexey Veretelnik <alex.in.development@gmail.com>"
+    ],
+    "description": "An advanced Yii 2 helpers.",
+    "repository" : {
+        "type": "git", 
+        "url": "https://github.com/goodizer/yii2-helpers.git"
+    },
+    "bugs": {
+        "url": "https://github.com/goodizer/yii2-helpers/issues"
+    },
+    "keywords": [
+        "yii2",
+        "extension",
+        "helper"
+    ],
+    "license": "MIT License"
+}
