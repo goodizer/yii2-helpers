@@ -16,24 +16,12 @@
         "issues": "https://github.com/goodizer/yii2-helpers/issues",
         "source": "https://github.com/goodizer/yii2-helpers"
     },
-    "minimum-stability": "dev",
     "require": {
         "yiisoft/yii2": "*"
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:goodizer/yii2-helpers.git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "goodizer\\helpers\\": ""
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
         }
     }
 }
