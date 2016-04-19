@@ -1,6 +1,7 @@
 {
     "name": "goodizer/yii2-helpers",
     "description": "An advanced Yii 2 helpers.",
+    "version": "0.1.1",
     "keywords": ["yii2", "extension", "helper"],
     "homepage": "https://github.com/goodizer/yii2-helpers",
     "type": "yii2-extension",
@@ -16,15 +17,12 @@
         "issues": "https://github.com/goodizer/yii2-helpers/issues",
         "source": "https://github.com/goodizer/yii2-helpers"
     },
-    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "goodizer\\helpers\\": ""
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.1.x-dev"
-        }
+    "require": {
+        "yiisoft/yii2": "~2"
     }
 }
