@@ -5,7 +5,7 @@
     "keywords": [
         "yii2",
         "extension",
-        "helper",
+        "helper"
     ],
     "homepage": "https://github.com/goodizer/yii2-helpers",
     "type": "yii2-extension",
@@ -13,7 +13,7 @@
     "authors": [
         {
             "name": "Alexey Veretelnik",
-            "email": "alex.in.development@gmail.com",
+            "email": "alex.in.development@gmail.com"
         }
     ],
     "minimum-stability": "stable",
@@ -24,5 +24,5 @@
         "psr-4": {
             "goodizer\\helpers\\": ""
         }
-    },
+    }
 }
