@@ -25,7 +25,7 @@ class DbSync
     /**
      * @var string[]
      */
-    private $tableNames;
+    public $tableNames;
 
     /**
      * Example:
