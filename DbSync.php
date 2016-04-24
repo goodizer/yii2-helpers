@@ -20,7 +20,7 @@ class DbSync
     /**
      * @var string[]
      */
-    private $nameSpaces;
+    public $nameSpaces;
 
     /**
      * @var string[]
