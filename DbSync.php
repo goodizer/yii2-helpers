@@ -28,6 +28,15 @@ class DbSync
     private $tableNames;
 
     /**
+     * Example:
+     * Namespaces
+     *
+     * (new DbSync([
+     *     'common\models\',
+     *     'frontend\models\',
+     * ]))->run();
+     *
+     *
      * @param array $nameSpaces
      */
     public function __construct(array $nameSpaces)
