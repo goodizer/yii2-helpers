@@ -62,6 +62,7 @@ class DbSync
                 }
 
                 if (!method_exists($model, 'attributeTypes')) {
+                    echo 'Required method "' . get_class($model) . '::attributeTypes()" not found.';
                     break;
                 }
 
