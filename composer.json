@@ -3,7 +3,7 @@
     "description": "An advanced Yii 2 helpers.",
     "keywords": ["yii2", "extension", "helper"],
     "homepage": "https://github.com/goodizer/yii2-helpers",
-    "type": "yii2-extension",
+    "type": "yii2-helpers",
     "license": "MIT",
     "authors": [
         {

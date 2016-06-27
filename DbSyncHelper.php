@@ -10,7 +10,7 @@ use yii\db\Connection;
  * Date: 04.11.2015
  * Time: 9:37
  */
-class DbSync
+class DbSyncHelper
 {
     /**
      * @var Connection
