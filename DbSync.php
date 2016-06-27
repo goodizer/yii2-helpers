@@ -28,12 +28,27 @@ class DbSync
     public $tableNames;
 
     /**
+     * Important - modelClass must have a public method "attributeTypes"
      * Example:
-     * Namespaces
+     *
+     * public function attributeTypes()
+     * {
+     *      return [
+     *          'id' => Schema::TYPE_PK,
+     *          'owner_id' => Schema::TYPE_INTEGER,
+     *          'name' => Schema::TYPE_STRING,
+     *          'description' => Schema::TYPE_TEXT,
+     *          'status' => Schema::TYPE_SMALLINT,
+     *          'updated_at' => Schema::TYPE_TIMESTAMP,
+     *          'created_at' => Schema::TYPE_TIMESTAMP,
+     *      ];
+     * }
+     *
+     * Example of use:
      *
      * (new DbSync([
-     *     'common\models\',
-     *     'frontend\models\',
+     *     'common\models\', // if namespace equivalent to path
+     *     'Path to directory' => 'someName\models\',
      * ]))->run();
      *
      *
@@ -41,8 +56,8 @@ class DbSync
      */
     public function __construct(array $nameSpaces)
     {
-        foreach ($nameSpaces as $nameSpace) {
-            $this->nameSpaces[] = trim($nameSpace, '\\') . '\\';
+        foreach ($nameSpaces as $key => $nameSpace) {
+            $this->nameSpaces[$key] = trim($nameSpace, '\\') . '\\';
         }
 
         $this->db = \Yii::$app->getDb();
@@ -54,10 +69,22 @@ class DbSync
         $command = $this->db->createCommand();
         $changed = false;
 
-        foreach ($this->nameSpaces as $nameSpace) {
-            $path = '@' . str_replace('\\', '/', $nameSpace);
+        foreach ($this->nameSpaces as $key => $nameSpace) {
+            if(is_integer($key)) {
+                $alias = '@' . str_replace('\\', '/', $nameSpace);
+                $path = \Yii::getAlias($alias);
+            } else {
+                $path = $key;
+            }
 
-            foreach (glob(\Yii::getAlias($path . '*.php')) as $file) {
+            if(!is_dir($path)) {
+                echo 'Directory not exist' . PHP_EOL;
+                echo 'Path - "' . $path . '"' . PHP_EOL;
+                echo 'Namespace - "' . $nameSpace . '"' . PHP_EOL . PHP_EOL;
+                break;
+            }
+
+            foreach (glob($path . '*.php') as $file) {
                 $info = pathinfo($file);
                 $modelCls = $nameSpace . $info['filename'];
 
