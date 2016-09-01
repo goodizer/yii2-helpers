@@ -152,7 +152,7 @@ class GridSearchHelper
     {
         $op = '';
         if (!is_array($value)) {
-            if (in_array($type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME])) {
+            if (in_array($type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_DATETIME])) {
                 $values = explode(' - ', $value);
 
                 if (sizeof($values) == 1) {
