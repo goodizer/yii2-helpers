@@ -21,7 +21,7 @@ class GridSearchHelper
     /**
      * Example:
      *
-    /* $model = new User();
+     * /* $model = new User();
      * $model->status = User::STATUS_ACTIVE;
      * $searchData = ModelHelper::search($model);
      *
