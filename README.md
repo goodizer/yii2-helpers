@@ -22,7 +22,7 @@ $ php composer.phar require goodizer/yii2-helpers
 or add
 
 ```
-"goodizer/yii2-helpers": "@stable"
+"goodizer/yii2-helpers": "*"
 ```
 
 to the ```require``` section of your `composer.json` file.
@@ -35,7 +35,7 @@ to the ```require``` section of your `composer.json` file.
 use goodizer\helpers\GridSearchHelper;
 use yii\grid\GridView;
 
-$searchData = GridSearchHelper::search(new Note(), ['asArray' => false]);
+$searchData = GridSearchHelper::search(new Note());
 echo GridView::widget([
 	'columns' => [
 		'id',
