@@ -40,7 +40,7 @@ class DbSyncHelper
      *          'description' => Schema::TYPE_TEXT,
      *          'status' => Schema::TYPE_SMALLINT,
      *          'updated_at' => Schema::TYPE_TIMESTAMP,
-     *          'created_at' => Schema::TYPE_TIMESTAMP,
+     *          'created_at' => Schema::TYPE_DATETIME,
      *      ];
      * }
      *
@@ -104,12 +104,12 @@ class DbSyncHelper
 
                 $tblName = $model->tableName();
                 $fieldTypes = $model->attributeTypes();
-                $tableSchema = $this->db->getTableSchema($tblName, true);
+                $schema = $this->db->getTableSchema($tblName, true);
 
-                $fullTblName = $tableSchema ? $tableSchema->fullName : null;
+                $fullTblName = $schema ? $schema->fullName : null;
 
                 if (null !== $fullTblName && in_array($fullTblName, $this->tableNames)) {
-                    $currColNames = $this->db->getTableSchema($tblName, true)->getColumnNames();
+                    $currColNames = $schema->getColumnNames();
                     $newColumns = array_diff(array_keys($fieldTypes), $currColNames);
                     $removeColumns = array_diff($currColNames, array_keys($fieldTypes));
 
