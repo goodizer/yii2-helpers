@@ -11,7 +11,7 @@ yii2-helpers
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
-> Note: Check the [composer.json](https://github.com/kartik-v/yii2-date-range/blob/master/composer.json) for this extension's requirements and dependencies. 
+> Note: Check the [composer.json](https://github.com/goodizer/yii2-helpers/blob/master/composer.json) for this extension's requirements and dependencies. 
 
 Either run
 
