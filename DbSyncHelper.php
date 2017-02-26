@@ -1,14 +1,18 @@
 <?php
+/**
+ * Db sync helper.
+ * @author: Goodizer
+ * @version 1.2.2
+ */
+
 namespace goodizer\helpers;
 
 use yii\db\ActiveRecord;
 use yii\db\Connection;
 
 /**
- * Created by PhpStorm.
- * User: Администратор
- * Date: 04.11.2015
- * Time: 9:37
+ * Class DbSyncHelper
+ * @package goodizer\helpers
  */
 class DbSyncHelper
 {
