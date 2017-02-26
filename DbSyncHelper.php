@@ -15,7 +15,7 @@ class DbSyncHelper
     /**
      * @var Connection
      */
-    private $db;
+    public $db;
 
     /**
      * @var string[]
@@ -60,7 +60,10 @@ class DbSyncHelper
             $this->nameSpaces[$key] = trim($nameSpace, '\\') . '\\';
         }
 
-        $this->db = \Yii::$app->getDb();
+        if($this->db === null) {
+            $this->db = \Yii::$app->getDb();
+        }
+
         $this->tableNames = $this->db->getSchema()->getTableNames();
     }
 
