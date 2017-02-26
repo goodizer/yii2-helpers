@@ -19,7 +19,12 @@ class DbSyncHelper
     /**
      * @var Connection
      */
-    public $db;
+    private $_db;
+
+    /**
+     * @var bool
+     */
+    private $_isConsole;
 
     /**
      * @var string[]
@@ -65,14 +70,14 @@ class DbSyncHelper
             $this->nameSpaces[$key] = trim($nameSpace, '\\') . '\\';
         }
 
-        $this->db = $db ?: \Yii::$app->getDb();
-
-        $this->tableNames = $this->db->getSchema()->getTableNames();
+        $this->_isConsole = \Yii::$app instanceof yii\console\Application;
+        $this->_db = $db ?: \Yii::$app->getDb();
+        $this->tableNames = $this->_db->getSchema()->getTableNames();
     }
 
     public function run()
     {
-        $command = $this->db->createCommand();
+        $command = $this->_db->createCommand();
         $changed = false;
 
         foreach ($this->nameSpaces as $key => $nameSpace) {
@@ -84,9 +89,11 @@ class DbSyncHelper
             }
 
             if(!is_dir($path)) {
-                echo 'Directory not exist' . PHP_EOL;
-                echo 'Path - "' . $path . '"' . PHP_EOL;
-                echo 'Namespace - "' . $nameSpace . '"' . PHP_EOL . PHP_EOL;
+                if($this->_isConsole) {
+                    echo 'Directory not exist' . PHP_EOL;
+                    echo 'Path - "' . $path . '"' . PHP_EOL;
+                    echo 'Namespace - "' . $nameSpace . '"' . PHP_EOL . PHP_EOL;
+                }
                 break;
             }
 
@@ -104,13 +111,15 @@ class DbSyncHelper
                 }
 
                 if (!method_exists($model, 'attributeTypes')) {
-                    echo 'Required method "' . get_class($model) . '::attributeTypes()" not found.';
+                    if($this->_isConsole) {
+                        echo 'Required method "' . get_class($model) . '::attributeTypes()" not found.';
+                    }
                     break;
                 }
 
                 $tblName = $model->tableName();
                 $fieldTypes = $model->attributeTypes();
-                $schema = $this->db->getTableSchema($tblName, true);
+                $schema = $this->_db->getTableSchema($tblName, true);
 
                 $fullTblName = $schema ? $schema->fullName : null;
 
@@ -120,39 +129,55 @@ class DbSyncHelper
                     $removeColumns = array_diff($currColNames, array_keys($fieldTypes));
 
                     if (!empty($newColumns)) {
-                        echo 'Add new column(s) to the table "' . $fullTblName . '"' . PHP_EOL;
+                        if($this->_isConsole) {
+                            echo 'Add new column(s) to the table "' . $fullTblName . '"' . PHP_EOL;
+                        }
                         foreach ($newColumns as $colName) {
                             $command->addColumn($tblName, $colName, $fieldTypes[$colName]);
                             $command->execute();
-                            echo '  Column "' . $colName . '" added with type [' . $fieldTypes[$colName] . ']' . PHP_EOL;
+                            if($this->_isConsole) {
+                                echo '  Column "' . $colName . '" added with type [' . $fieldTypes[$colName] . ']' . PHP_EOL;
+                            }
                         }
                         $changed = true;
-                        echo 'Done.' . PHP_EOL . PHP_EOL;
+                        if($this->_isConsole) {
+                            echo 'Done.' . PHP_EOL . PHP_EOL;
+                        }
                     }
 
                     if (!empty($removeColumns)) {
-                        echo 'Remove column(s) from the table "' . $fullTblName . '"' . PHP_EOL;
+                        if($this->_isConsole) {
+                            echo 'Remove column(s) from the table "' . $fullTblName . '"' . PHP_EOL;
+                        }
                         foreach ($removeColumns as $colName) {
                             $command->dropColumn($tblName, $colName);
                             $command->execute();
-                            echo '  Column "' . $colName . '" is removed' . PHP_EOL;
+                            if($this->_isConsole) {
+                                echo '  Column "' . $colName . '" is removed' . PHP_EOL;
+                            }
                         }
                         $changed = true;
-                        echo 'Done.' . PHP_EOL . PHP_EOL;
+                        if($this->_isConsole) {
+                            echo 'Done.' . PHP_EOL . PHP_EOL;
+                        }
                     }
 
                 } else {
-                    $command = $this->db->createCommand();
+                    $command = $this->_db->createCommand();
                     $command->createTable($tblName, $fieldTypes);
                     $command->execute();
                     $changed = true;
-                    echo 'New table "' . trim($this->db->quoteSql($tblName), '`') . '" is created.' . PHP_EOL;
+                    if($this->_isConsole) {
+                        echo 'New table "' . trim($this->_db->quoteSql($tblName), '`') . '" is created.' . PHP_EOL;
+                    }
                 }
 
             }
         }
         if (!$changed) {
-            echo 'Changes not found.' . PHP_EOL;
+            if($this->_isConsole) {
+                echo 'Changes not found.' . PHP_EOL;
+            }
         }
     }
 }
