@@ -53,16 +53,15 @@ class DbSyncHelper
      *
      *
      * @param array $nameSpaces
+     * @param null|Connection $db
      */
-    public function __construct(array $nameSpaces)
+    public function __construct(array $nameSpaces, $db = null)
     {
         foreach ($nameSpaces as $key => $nameSpace) {
             $this->nameSpaces[$key] = trim($nameSpace, '\\') . '\\';
         }
 
-        if($this->db === null) {
-            $this->db = \Yii::$app->getDb();
-        }
+        $this->db = $db ?: \Yii::$app->getDb();
 
         $this->tableNames = $this->db->getSchema()->getTableNames();
     }
