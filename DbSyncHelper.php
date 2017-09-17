@@ -7,6 +7,7 @@
 
 namespace goodizer\helpers;
 
+use Yii;
 use yii\db\ActiveRecord;
 use yii\db\Connection;
 
@@ -70,8 +71,8 @@ class DbSyncHelper
             $this->nameSpaces[$key] = trim($nameSpace, '\\') . '\\';
         }
 
-        $this->_isConsole = \Yii::$app instanceof yii\console\Application;
-        $this->_db = $db ?: \Yii::$app->getDb();
+        $this->_isConsole = Yii::$app instanceof yii\console\Application;
+        $this->_db = $db ?: Yii::$app->getDb();
         $this->tableNames = $this->_db->getSchema()->getTableNames();
     }
 
@@ -83,7 +84,7 @@ class DbSyncHelper
         foreach ($this->nameSpaces as $key => $nameSpace) {
             if(is_integer($key)) {
                 $alias = '@' . str_replace('\\', '/', $nameSpace);
-                $path = \Yii::getAlias($alias);
+                $path = Yii::getAlias($alias);
             } else {
                 $path = $key;
             }
