@@ -108,14 +108,14 @@ class DbSyncHelper
                 $model = new $modelCls();
 
                 if (!$model instanceof ActiveRecord) {
-                    break;
+                    continue;
                 }
 
                 if (!method_exists($model, 'attributeTypes')) {
                     if($this->_isConsole) {
                         echo 'Required method "' . get_class($model) . '::attributeTypes()" not found.';
                     }
-                    break;
+                    continue;
                 }
 
                 $tblName = $model->tableName();
