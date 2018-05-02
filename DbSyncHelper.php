@@ -107,11 +107,7 @@ class DbSyncHelper
                  */
                 $model = new $modelCls();
 
-                if (!$model instanceof ActiveRecord) {
-                    continue;
-                }
-
-                if (!method_exists($model, 'attributeTypes')) {
+                if (!$model instanceof ActiveRecord || !method_exists($model, 'attributeTypes')) {
                     continue;
                 }
 
