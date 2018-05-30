@@ -45,12 +45,12 @@ class GridSearchHelper
         }
 
         $opts = ArrayHelper::merge([
-                'pagination' => ['defaultPageSize' => 10],
-                'data' => null,
-                'query' => null,
-                'scenario' => null,
-                'asArray' => false,
-            ],
+            'pagination' => ['defaultPageSize' => 10],
+            'data' => null,
+            'query' => null,
+            'scenario' => null,
+            'asArray' => false,
+        ],
             $opts
         );
 
@@ -77,11 +77,11 @@ class GridSearchHelper
     static function searchQuery($model, $opts = [])
     {
         $opts = ArrayHelper::merge([
-                'data' => null,
-                'query' => null,
-                'columns' => [],
-                'filters' => []
-            ],
+            'data' => null,
+            'query' => null,
+            'columns' => [],
+            'filters' => []
+        ],
             $opts
         );
 
@@ -173,6 +173,10 @@ class GridSearchHelper
 
                     return ['BETWEEN', static::convertColumnToType($name, $type), $values[0], $values[1]];
                 } else {
+                    if (date('H:i:s', strtotime($value)) == '00:00:00') {
+                        return ['=', new Expression("DATE({$name})"), $value];
+                    }
+
                     $op = '=';
                 }
             } elseif (preg_match('/^(?:\s*(<>|<=|>=|<|>|=|~))?(.*)$/', $value, $matches)) {
