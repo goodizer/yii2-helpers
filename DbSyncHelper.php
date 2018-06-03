@@ -2,7 +2,7 @@
 /**
  * Db sync helper.
  * @author: Goodizer
- * @version 1.2.2
+ * @version 1.4.0
  */
 
 namespace goodizer\helpers;
@@ -17,6 +17,8 @@ use yii\db\Connection;
  */
 class DbSyncHelper
 {
+    const ADD_CONSTRAINT_REFERENCES = 1;
+
     /**
      * @var Connection
      */
@@ -41,6 +43,7 @@ class DbSyncHelper
      * Important - modelClass must have a public method "attributeTypes"
      * Example:
      *
+     * ```php
      * public function attributeTypes()
      * {
      *      return [
@@ -51,24 +54,27 @@ class DbSyncHelper
      *          'status' => Schema::TYPE_SMALLINT,
      *          'updated_at' => Schema::TYPE_TIMESTAMP,
      *          'created_at' => Schema::TYPE_DATETIME,
-     *          'test_category_id' => Schema::TYPE_INTEGER,
      *
      *          // Set new index and foreign key example
-     *          // "addForeignKey" method params array: [table name, table field, relation table name, relation field name, on delete, on update]
-     *          [
-     *              'createIndex' => [static::tableName(), 'test_category_id'],
-     *              'addForeignKey' => [static::tableName(), 'test_category_id', ProductCategory::tableName(), 'id', 'CASCADE'],
+     *          // addForeignKey method params array:
+     *          // [$name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null]
+     *          // Warning! First arg "$name" will be auto generated
+     *
+     *          DbSyncHelper::ADD_CONSTRAINT_REFERENCES => [
+     *              'addForeignKey' => [static::tableName(), 'owner_id', Owner::tableName(), 'id', 'CASCADE'],
      *          ],
      *      ];
      * }
+     * ```
      *
      * Example of use:
      *
+     * ```php
      * (new DbSync([
      *     'common\models\', // if namespace equivalent to path
      *     'Path to directory' => 'someName\models\',
      * ]))->run();
-     *
+     * ```
      *
      * @param array $nameSpaces
      * @param null|Connection $db
@@ -98,15 +104,14 @@ class DbSyncHelper
             }
 
             if (!is_dir($path)) {
-                if ($this->_isConsole) {
-                    echo 'Directory not exist' . PHP_EOL;
-                    echo 'Path - "' . $path . '"' . PHP_EOL;
-                    echo 'Namespace - "' . $nameSpace . '"' . PHP_EOL . PHP_EOL;
-                }
+                $this->debug_msg("Directory not exist: ");
+                $this->debug_msg("Path - '{$path}'");
+                $this->debug_msg("Namespace - '{$nameSpace}'");
+                echo PHP_EOL;
                 break;
             }
 
-            foreach (glob($path . '*.php') as $file) {
+            foreach (glob($path . '*.php') as $k => $file) {
                 $info = pathinfo($file);
                 $modelCls = $nameSpace . $info['filename'];
 
@@ -119,154 +124,143 @@ class DbSyncHelper
                     continue;
                 }
 
-                $tblName = $model->tableName();
-                $fieldTypes = $model->attributeTypes();
-                $schema = $this->_db->getTableSchema($tblName, true);
-                $funcStack = array_filter($fieldTypes, function ($v) {
-                    return is_array($v);
-                });
-                $newColumns = array_filter($fieldTypes, function ($v) {
-                    return !is_array($v);
-                });
+                $tbl_name = $model->tableName();
+                $schema = $this->_db->getTableSchema($tbl_name, true);
+                $field_types = array_filter($model->attributeTypes(), function ($v, $k) {
+                    return is_string($k) && is_string($v);
+                }, ARRAY_FILTER_USE_BOTH);
+                $stack_to_add = array_filter($model->attributeTypes(), function ($v, $k) {
+                    return is_int($k) && is_array($v);
+                }, ARRAY_FILTER_USE_BOTH);
 
-                if (null !== $schema && in_array($fullTblName = $schema ? $schema->fullName : null, $this->tableNames)) {
-                    $currColNames = $schema->getColumnNames();
-                    $newColumns = array_filter(array_diff(array_keys($fieldTypes), $currColNames));
-                    $removeColumns = array_diff($currColNames, array_keys($fieldTypes));
+                if (null !== $schema && in_array($tbl_full_name = $schema ? $schema->fullName : null, $this->tableNames)) {
+                    $new_columns = array_filter(array_diff(array_keys($field_types), $schema->getColumnNames()));
 
-                    if (!empty($newColumns)) {
-                        if ($this->_isConsole) {
-                            echo 'Add new column(s) to the table "' . $fullTblName . '".' . PHP_EOL;
-                        }
+                    if (!empty($new_columns)) {
+                        $this->debug_msg("Add new column(s) to the table ':tbl_name'.", [
+                            ':tbl_name' => $tbl_full_name,
+                        ]);
 
-                        foreach ($newColumns as $column) {
-                            $command->addColumn($tblName, $column, $fieldTypes[$column]);
+                        foreach ($new_columns as $column) {
+                            $command->addColumn($tbl_name, $column, $field_types[$column]);
                             $command->execute();
 
-                            if ($this->_isConsole) {
-                                echo '  Column "' . $column . '" added with type [' . $fieldTypes[$column] . '].' . PHP_EOL;
-                            }
+                            $this->debug_msg("  Column ':column' added with type [:type].", [
+                                ':column' => $column,
+                                ':type' => $field_types[$column],
+                            ]);
                         }
 
                         $changed = true;
-                        if ($this->_isConsole) {
-                            echo 'Done.' . PHP_EOL . PHP_EOL;
-                        }
+                        $this->debug_msg("Done.");
+                        echo PHP_EOL;
                     }
 
-                    /** Remove columns */
-                    if (!empty($removeColumns)) {
-                        if ($this->_isConsole) {
-                            echo 'Remove column(s) from the table "' . $fullTblName . '".' . PHP_EOL;
-                        }
+                    $remove_columns = array_diff($schema->getColumnNames(), array_keys($field_types));
 
-                        foreach ($removeColumns as $column) {
+                    /** Remove columns */
+                    if (!empty($remove_columns)) {
+                        $this->debug_msg("Remove column(s) from the table ':tbl_name'.", [':tbl_name' => $tbl_full_name]);
+
+                        foreach ($remove_columns as $column) {
                             foreach ($schema->foreignKeys as $fk => $data) {
                                 if (isset($data[$column])) {
-                                    $command->dropForeignKey($fk, $fullTblName);
+                                    $command->dropForeignKey($fk, $tbl_full_name);
                                     $command->execute();
 
-                                    if ($this->_isConsole) {
-                                        echo '  ForeignKey "' . $fk . '" is removed.' . PHP_EOL;
-                                    }
+                                    $this->debug_msg("  ForeignKey ':fk' is removed.", [':fk' => $fk]);
                                 }
                             }
 
-                            $command->dropColumn($tblName, $column);
+                            $command->dropColumn($tbl_name, $column);
                             $command->execute();
-                            if ($this->_isConsole) {
-                                echo '  Column "' . $column . '" is removed.' . PHP_EOL;
-                            }
+
+                            $this->debug_msg("  Column ':column' is removed.", [':column' => $column]);
                         }
 
                         $changed = true;
-                        if ($this->_isConsole) {
-                            echo 'Done.' . PHP_EOL . PHP_EOL;
-                        }
+
+                        $this->debug_msg("Done.");
+                        echo PHP_EOL;
                     }
 
                 } else {
-                    $command = $this->_db->createCommand();
-                    $command->createTable($tblName, $newColumns);
+                    $command->createTable($tbl_name, $field_types);
                     $command->execute();
                     $changed = true;
-                    if ($this->_isConsole) {
-                        echo 'New table "' . trim($this->_db->quoteSql($tblName), '`') . '" is created.' . PHP_EOL;
-                    }
-                    $newColumns = array_keys($newColumns);
+                    $this->debug_msg("New table ':tbl_name' is created.", [
+                        ':tbl_name' => trim($this->_db->quoteSql($tbl_name)),
+                    ]);
                 }
 
-
                 /** Executing createIndex, addForeignKey for saved tables */
-                if (!empty($funcStack)) {
-                    foreach ($funcStack as $k => $stack) {
-                        foreach ($stack as $method => $params) {
-                            switch ($method) {
-                                case "createIndex":
-                                    list($table, $column) = $params;
+                foreach ($stack_to_add as $method => $params) {
+                    switch ($method) {
+                        case static::ADD_CONSTRAINT_REFERENCES:
+                            list($tbl, $col, $ref_tbl, $ref_col, $delete, $update) = $params;
 
-                                    if (!$table || !$column) {
-                                        echo "      !!! Skip to execute method '{$method}'. Wrong params." . PHP_EOL;
-                                        break;
-                                    }
-
-                                    if (!in_array($column, $newColumns)) {
-                                        break;
-                                    }
-
-                                    call_user_func_array([$command, $method], [
-                                        "{$table}_{$column}_idx_{$k}",
-                                        $table,
-                                        $column,
-                                    ]);
-
-                                    echo 'Create new index "' . "{$table}_{$column}_idx_{$k}" . '".';
-                                    echo PHP_EOL;
-
-                                    $command->execute();
-                                    break;
-                                case "addForeignKey":
-                                    list($table, $column, $refTable, $refColumn, $delete, $update) = $params;
-
-                                    if (!$table || !$column || !$refTable || !$refColumn) {
-                                        echo "      !!! Skip to execute method '{$method}'. Wrong params." . PHP_EOL;
-                                        break;
-                                    }
-
-                                    if (!in_array($column, $newColumns)) {
-                                        break;
-                                    }
-
-                                    call_user_func_array([$command, $method], [
-                                        "{$table}_{$column}_fk_{$k}",
-                                        $table,
-                                        $column,
-                                        $refTable,
-                                        $refColumn,
-                                        $delete,
-                                        $update,
-                                    ]);
-
-                                    echo "Add new foreign key '{$column}' ({$table}_{$column}_fk_{$k}) reference on '{$refTable}.{$refColumn}'";
-                                    echo PHP_EOL;
-
-                                    $command->execute();
-                                    break;
+                            if (!$tbl || !$col || !$ref_tbl || !$ref_col) {
+                                $this->debug_msg("!Missing required args for Command::addForeignKey(): :args.", [
+                                    ':args' => '$tbl, $col, $ref_tbl, $ref_col'
+                                ]);
+                                break;
                             }
-                        }
+
+                            $idx_name = "{$tbl}_{$col}_idx_{$k}";
+                            $fk_name = "{$tbl}_{$col}_fk_{$k}";
+
+                            /** If foreign key already exist or not found in field types */
+                            if (isset($schema->foreignKeys[$fk_name], $schema->foreignKeys[$fk_name][$col])
+                                || !isset($field_types[$col])
+                            ) {
+                                break;
+                            }
+
+                            $command->createIndex($idx_name, $tbl, $col);
+                            $command->execute();
+
+                            $this->debug_msg("Create new index '{$idx_name}'.");
+
+                            $command->addForeignKey($fk_name, $tbl, $col, $ref_tbl, $ref_col, $delete, $update);
+                            $command->execute();
+
+                            $this->debug_msg("Add new constraint fk ':column' -> ':fk_name' references to ':references'.", [
+                                ':column' => $tbl . '.' . $col,
+                                ':fk_name' => $fk_name,
+                                ':references' => $ref_tbl . '.' . $ref_col,
+                            ]);
+
+                            break;
                     }
                 }
             }
         }
 
         if (!$changed) {
-            if ($this->_isConsole) {
-                echo 'Changes not found.' . PHP_EOL;
-            }
+            $this->debug_msg('Changes not found.');
         } else {
-            if ($this->_isConsole) {
-                echo 'End.' . PHP_EOL;
-            }
+            $this->debug_msg('End.');
         }
+    }
+
+    /**
+     * @param $msg
+     * @param array $params
+     * @param bool $return
+     * @return null|string
+     */
+    protected function debug_msg($msg, $params = [], $return = false)
+    {
+        if ($this->_isConsole) {
+            if (!empty($params)) {
+                $msg = strtr($msg, $params);
+            }
+            if ($return === true) {
+                return $msg;
+            }
+            echo $msg . "\r\n";
+        }
+
+        return null;
     }
 }

@@ -31,6 +31,8 @@ to the ```require``` section of your `composer.json` file.
 
 ### GridSearchHelper
 
+Create ActiveDataProvider object and build query by GET|POST data validated in model, which will be in filterModel property for GridView, ListView, etc.
+
 ```php
 use goodizer\helpers\GridSearchHelper;
 use yii\grid\GridView;
@@ -45,10 +47,11 @@ echo GridView::widget([
     'filterModel' => $searchData->filterModel,
     'dataProvider' => $searchData->dataProvider,
 ]);
-
 ```
 
 ### DbSyncHelper
+
+Create or modify tables by model attribute types. Also can add CONSTRAINT REFERENCES.
 
 ```php
 use goodizer\helpers\DbSyncHelper;
@@ -59,5 +62,4 @@ $sync = new DbSyncHelper([
   'some\another\namespace',
 ]);
 $sync->run();
-
 ```
