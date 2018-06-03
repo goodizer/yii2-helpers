@@ -51,8 +51,7 @@ echo GridView::widget([
 ### DbSyncHelper
 
 ```php
-use goodizer\helpers\GridSearchHelper;
-use yii\grid\GridView;
+use goodizer\helpers\DbSyncHelper;
 
 $sync = new DbSyncHelper([
   'common\models',
